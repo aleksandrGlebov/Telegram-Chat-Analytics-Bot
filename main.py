@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 from telegram import Update
+from telegram import BotCommand
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler, CallbackContext
 import matplotlib
 matplotlib.use('Agg')
@@ -42,10 +43,10 @@ def handle_chat_history(update: Update, context: CallbackContext, bot_token: str
         
         # Запускаем сабпроцессы
         try:
-            subprocess.run(["python", "top.py", str(update.effective_chat.id), bot_token], check=True)
-            subprocess.run(["python", "days_stats.py", str(update.effective_chat.id), bot_token], check=True)
-            subprocess.run(["python", "time_series_analysis.py", str(update.effective_chat.id), bot_token], check=True)
-            subprocess.run(["python", "top_words.py", str(update.effective_chat.id), bot_token], check=True)
+            subprocess.run(["python", "analysis/top_users.py", str(update.effective_chat.id), bot_token], check=True)
+            subprocess.run(["python", "analysis/days_stats.py", str(update.effective_chat.id), bot_token], check=True)
+            subprocess.run(["python", "analysis/time_series_analysis.py", str(update.effective_chat.id), bot_token], check=True)
+            subprocess.run(["python", "analysis/top_words.py", str(update.effective_chat.id), bot_token], check=True)
         except subprocess.CalledProcessError:
             update.message.reply_text("Произошла ошибка при обработке данных.")
             return END
@@ -78,6 +79,14 @@ def main():
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
+
+    bot = updater.bot
+    commands = [
+        BotCommand('/start', 'Start the bot'),
+        BotCommand('/upload', 'Upload chat history'),
+        BotCommand('/cancel', 'Cancel the operation')
+    ]
+    bot.setMyCommands(commands)
 
     # Add conversation handler with states
     conv_handler = ConversationHandler(
