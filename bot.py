@@ -45,7 +45,7 @@ def handle_chat_history(update: Update, context: CallbackContext, bot_token: str
             subprocess.run(["python", "top.py", str(update.effective_chat.id), bot_token], check=True)
             subprocess.run(["python", "days_stats.py", str(update.effective_chat.id), bot_token], check=True)
             subprocess.run(["python", "time_series_analysis.py", str(update.effective_chat.id), bot_token], check=True)
-            # Добавьте здесь дополнительные сабпроцессы, если необходимо
+            subprocess.run(["python", "top_words.py", str(update.effective_chat.id), bot_token], check=True)
         except subprocess.CalledProcessError:
             update.message.reply_text("Произошла ошибка при обработке данных.")
             return END
